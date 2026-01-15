@@ -15,7 +15,7 @@ PHP_INI="/etc/php/8.2/fpm/php.ini"
 
 echo "=== Konfigurasi max_input_vars ke 6000 ==="
 
-sed -i 's/\(max_input_vars\s*=\s*\)1000/\16000/' /etc/php/8.2/fpm/php.ini
+sed -i 's/^;\s*max_input_vars\s*=.*/max_input_vars = 6000/' /etc/php/8.2/fpm/php.ini
 
 echo "=== Restart PHP-FPM dan Nginx ==="
 systemctl restart php8.2-fpm
