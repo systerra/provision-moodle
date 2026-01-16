@@ -1,6 +1,20 @@
 #!/bin/bash
 set -e
 
+echo "=== Update /etc/hosts ==="
+sed -i '2c\192.168.20.3       db-20' /etc/hosts
+
+echo "=== Update hostname ==="
+echo "db-20" > /etc/hostname
+hostnamectl set-hostname db-20
+
+echo "=== Update IP address ==="
+sed -i 's/address[[:space:]]\+192\.168\.20\.2\/29/address 192.168.20.3\/29/' \
+    /etc/network/interfaces
+
+echo "=== Restart networking ==="
+systemctl restart networking
+
 echo "=== Install MariaDB Server & Client ==="
 apt install mariadb-server mariadb-client -y
 
