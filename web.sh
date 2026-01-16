@@ -123,3 +123,44 @@ EOF
 
 echo "=== Reload nginx ==="
 systemctl reload nginx
+
+CONFIG="/var/www/moodle/config.php"
+
+echo "Menunggu config.php Moodle..."
+
+while [ ! -f "$CONFIG" ]; do
+    sleep 2
+done
+
+echo "config.php ditemukan."
+
+if grep -q "alamat_akses" "$CONFIG"; then
+    echo "config.php sudah dimodifikasi. Skip."
+    exit 0
+fi
+
+awk '
+/\$CFG->wwwroot[[:space:]]*=[[:space:]]*'\''http:\/\/192.168.20.2'\'';/ {
+    print "$alamat_akses = $_SERVER[\"HTTP_HOST\"] ?? \"\";";
+    print "if (strpos($alamat_akses, \"172.16.100.20\") !== false) {";
+    print "    $CFG->wwwroot = \"http://172.16.100.20:9090\";";
+    print "    $_SERVER[\"SERVER_PORT\"] = 9090;";
+    print "} else {";
+    print "    $CFG->wwwroot = \"http://192.168.20.2\";";
+    print "}";
+    next
+}
+{ print }
+' "$CONFIG" > "${CONFIG}.tmp" && mv "${CONFIG}.tmp" "$CONFIG"
+
+echo "Moodle berhasil diperbarui."
+
+fi
+
+if [ -f "$MOODLE_CLI" ]; then
+    echo "Menjalankan purge cache Moodle..."
+    php "$MOODLE_CLI"
+    echo "Purge cache selesai."
+else
+    echo "WARNING: $MOODLE_CLI tidak ditemukan."
+fi
