@@ -13,7 +13,20 @@ sed -i 's/address[[:space:]]\+192\.168\.20\.2\/29/address 192.168.20.3\/29/' \
     /etc/network/interfaces
 
 echo "=== Restart networking ==="
-systemctl restart networking
+systemctl restart networking || true
+
+echo "=== Menunggu network siap ==="
+sleep 10
+
+# Tunggu sampai network benar-benar up (maks 60 detik)
+for i in {1..12}; do
+    if ping -c1 -W1 8.8.8.8 >/dev/null 2>&1; then
+        echo "Network siap."
+        break
+    fi
+    echo "Menunggu network... ($i)"
+    sleep 5
+done
 
 echo "=== Install MariaDB Server & Client ==="
 apt install mariadb-server mariadb-client -y
