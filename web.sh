@@ -15,6 +15,7 @@ PHP_INI="/etc/php/8.2/fpm/php.ini"
 
 sed -i 's/^;\s*max_input_vars\s*=.*/max_input_vars = 6000/' /etc/php/8.2/fpm/php.ini
 
+echo "===================================="
 echo "systemctl restart php8.2-fpm"
 systemctl restart php8.2-fpm
 
@@ -46,10 +47,10 @@ chmod -R 0777 /var/www/moodledata
 
 NGINX_DEFAULT="/etc/nginx/sites-available/default"
 
-echo "=== Hapus default nginx lama ==="
+echo "=== Hapus /etc/nginx/sites-available/default"
 rm -f "$NGINX_DEFAULT"
 
-echo "=== Buat default nginx baru ==="
+echo "=== Buat /etc/nginx/sites-available/default"
 cat << 'EOF' > "$NGINX_DEFAULT"
 ##
 # You should look at the following URL's in order to grasp a solid understanding
@@ -125,9 +126,11 @@ server {
 }
 EOF
 
+echo "===================================="
 echo "systemctl reload nginx"
 systemctl reload nginx
 
+echo "===================================="
 echo -e "\n=== KONFIGURASI NGINX SAAT INI: ==="
 cat << 'EOF'
 root /var/www/moodle;
