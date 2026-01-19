@@ -4,18 +4,38 @@ set -e
 FLAG="/root/.after-reboot"
 
 if [ ! -f "$FLAG" ]; then
-    echo "=== TAHAP 1: Konfigurasi awal sistem ==="
+    edit_file() {
+    local FILE="$1"
 
-    echo "=== Update /etc/hosts ==="
-    sed -i '2c\192.168.20.3       db-20' /etc/hosts
+    echo
+    echo "=== Membuka $FILE untuk ditinjau ==="
+    echo "Tutup nano/pico (CTRL+X) untuk melanjutkan script..."
+    echo
 
-    echo "=== Update hostname ==="
-    echo "db-20" > /etc/hostname
-    hostnamectl set-hostname db-20
+    if command -v nano >/dev/null 2>&1; then
+        nano "$FILE"
+    elif command -v pico >/dev/null 2>&1; then
+        pico "$FILE"
+    else
+        echo "Editor nano/pico tidak ditemukan, dilewati."
+        read -p "Tekan ENTER untuk melanjutkan..."
+    fi
+}
 
-    echo "=== Update IP address ==="
-    sed -i 's/address[[:space:]]\+192\.168\.20\.2\/29/address 192.168.20.3\/29/' \
-        /etc/network/interfaces
+echo "=== TAHAP 1: Konfigurasi awal sistem ==="
+
+echo "=== Update /etc/hosts ==="
+sed -i '2c\192.168.20.3        db-20' /etc/hosts
+edit_file /etc/hosts
+
+echo "=== Update hostname ==="
+echo "db-20" > /etc/hostname
+hostnamectl set-hostname db-20
+edit_file /etc/hostname
+
+echo "=== Update IP address ==="
+sed -i 's/address[[:space:]]\+192\.168\.20\.2\/29/address 192.168.20.3\/29/' /etc/network/interfaces
+edit_file /etc/network/interfaces
 
     echo "=== Tandai bahwa reboot akan dilakukan ==="
     touch "$FLAG"
