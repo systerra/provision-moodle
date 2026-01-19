@@ -46,7 +46,7 @@ edit_file /etc/network/interfaces
     exit 0
 fi
 
-echo "=== Install MariaDB Server & Client ==="
+echo "apt install mariadb-server mariadb-client"
 apt install mariadb-server mariadb-client -y
 
 echo "=== Create database Moodle ==="
@@ -67,7 +67,6 @@ EOF
 
 unset MYSQL_PWD
 
-echo "=== Verifikasi User & Database ==="
 export MYSQL_PWD="admin"
 mysql -u root -e "SHOW DATABASES LIKE 'moodle';"
 mysql -u root -e "SELECT Host, User FROM mysql.user WHERE User='noval';"
@@ -75,7 +74,7 @@ unset MYSQL_PWD
 
 MYSQL_CNF="/etc/mysql/mariadb.conf.d/50-server.cnf"
 
-echo "=== Konfigurasi bind-address ==="
+echo "bind-address = 0.0.0.0"
 sed -i 's/^\s*bind-address\s*=.*/bind-address = 0.0.0.0/' "$MYSQL_CNF"
 
 echo "=== Restart MariaDB ==="
