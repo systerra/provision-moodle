@@ -1,32 +1,30 @@
 #!/bin/bash
 set -e
 
-echo "=== Update /etc/hosts ==="
-sed -i '2c\192.168.20.3       db-20' /etc/hosts
+FLAG="/root/.after-reboot"
 
-echo "=== Update hostname ==="
-echo "db-20" > /etc/hostname
-hostnamectl set-hostname db-20
+if [ ! -f "$FLAG" ]; then
+    echo "=== TAHAP 1: Konfigurasi awal sistem ==="
 
-echo "=== Update IP address ==="
-sed -i 's/address[[:space:]]\+192\.168\.20\.2\/29/address 192.168.20.3\/29/' \
-    /etc/network/interfaces
+    echo "=== Update /etc/hosts ==="
+    sed -i '2c\192.168.20.3       db-20' /etc/hosts
 
-echo "=== Restart networking ==="
-systemctl restart networking || true
+    echo "=== Update hostname ==="
+    echo "db-20" > /etc/hostname
+    hostnamectl set-hostname db-20
 
-echo "=== Menunggu network siap ==="
-sleep 10
+    echo "=== Update IP address ==="
+    sed -i 's/address[[:space:]]\+192\.168\.20\.2\/29/address 192.168.20.3\/29/' \
+        /etc/network/interfaces
 
-# Tunggu sampai network benar-benar up (maks 60 detik)
-for i in {1..12}; do
-    if ping -c1 -W1 8.8.8.8 >/dev/null 2>&1; then
-        echo "Network siap."
-        break
-    fi
-    echo "Menunggu network... ($i)"
-    sleep 5
-done
+    echo "=== Tandai bahwa reboot akan dilakukan ==="
+    touch "$FLAG"
+
+    echo "=== Reboot sistem ==="
+    systemctl reboot
+
+    exit 0
+fi
 
 echo "=== Install MariaDB Server & Client ==="
 apt install mariadb-server mariadb-client -y
@@ -63,3 +61,5 @@ sed -i 's/^\s*bind-address\s*=.*/bind-address = 0.0.0.0/' "$MYSQL_CNF"
 echo "=== Restart MariaDB ==="
 systemctl restart mariadb
 systemctl restart mysqld
+
+rm -f "$FLAG"
