@@ -24,7 +24,7 @@ grep max_input_vars /etc/php/8.2/fpm/php.ini
 echo "wget https://packaging.moodle.org/stable500/moodle-latest-500.zip"
 wget https://packaging.moodle.org/stable500/moodle-latest-500.zip
 
-echo "=== Extract Moodle ke /var/www ==="
+echo "unzip moodle-latest-500.zip -d /var/www/"
 unzip moodle-latest-500.zip -d /var/www/
 
 echo "mkdir -p /var/www/moodledata"
@@ -127,6 +127,29 @@ EOF
 echo "systemctl reload nginx"
 systemctl reload nginx
 
+echo -e "\n=== KONFIGURASI NGINX SAAT INI: ==="
+cat << 'EOF'
+root /var/www/moodle;
+index index.php index.htm index.html;
+
+server_name _;
+
+location / {
+    try_files $uri $uri/ /index.php?$args;
+}
+
+location ~ \.(php|phar)(/.*)?$ {
+    fastcgi_split_path_info ^(.+\.(?:php|phar))(/.*)$;
+    fastcgi_intercept_errors on;
+    fastcgi_index index.php;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    fastcgi_param PATH_INFO $fastcgi_path_info;
+    fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
+}
+EOF
+echo -e "====================================\n"
+
 CONFIG="/var/www/moodle/config.php"
 MOODLE_CLI="/var/www/moodle/admin/cli/purge_caches.php"
 
@@ -155,7 +178,17 @@ else
     { print }
     ' "$CONFIG" > "${CONFIG}.tmp" && mv "${CONFIG}.tmp" "$CONFIG"
 
-    echo "Moodle berhasil diperbarui."
+    echo -e "\n=== KONFIGURASI BARU DI CONFIG.PHP: ==="
+    cat << 'EOF'
+$alamat_akses = $_SERVER["HTTP_HOST"] ?? "";
+if (strpos($alamat_akses, "172.16.100.20") !== false) {
+    $CFG->wwwroot = "http://172.16.100.20:9090";
+    $_SERVER["SERVER_PORT"] = 9090;
+} else {
+    $CFG->wwwroot = "http://192.168.20.2";
+}
+EOF
+    echo -e "========================================\n"
 fi
 
 
