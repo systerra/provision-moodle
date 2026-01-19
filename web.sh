@@ -18,9 +18,10 @@ sed -i 's/^;\s*max_input_vars\s*=.*/max_input_vars = 6000/' /etc/php/8.2/fpm/php
 echo "systemctl restart php8.2-fpm"
 systemctl restart php8.2-fpm
 
-echo "=== Selesai! ==="
-grep max_input_vars /etc/php/8.2/fpm/php.ini
+echo "===================================="
+grep "^max_input_vars" /etc/php/8.2/fpm/php.ini
 
+echo "===================================="
 echo "wget https://packaging.moodle.org/stable500/moodle-latest-500.zip"
 wget https://packaging.moodle.org/stable500/moodle-latest-500.zip
 
