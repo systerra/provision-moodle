@@ -2,7 +2,7 @@
 
 set -e
 
-echo "=== Install Nginx ==="
+echo "apt install nginx"
 apt install nginx -y
 
 echo "=== Install PHP 8.2 dan ekstensi ==="
@@ -13,30 +13,33 @@ php8.2-bcmath php8.2-exif php8.2-ldap php8.2-mysql unzip
 
 PHP_INI="/etc/php/8.2/fpm/php.ini"
 
-echo "=== Konfigurasi max_input_vars ke 6000 ==="
-
 sed -i 's/^;\s*max_input_vars\s*=.*/max_input_vars = 6000/' /etc/php/8.2/fpm/php.ini
 
-echo "=== Restart PHP-FPM dan Nginx ==="
+echo "systemctl restart php8.2-fpm"
 systemctl restart php8.2-fpm
 
 echo "=== Selesai! ==="
 grep max_input_vars /etc/php/8.2/fpm/php.ini
 
-echo "=== Download Moodle ==="
+echo "wget https://packaging.moodle.org/stable500/moodle-latest-500.zip"
 wget https://packaging.moodle.org/stable500/moodle-latest-500.zip
 
 echo "=== Extract Moodle ke /var/www ==="
 unzip moodle-latest-500.zip -d /var/www/
 
-echo "=== Buat direktori moodledata ==="
+echo "mkdir -p /var/www/moodledata"
+
 mkdir -p /var/www/moodledata
 
-echo "=== Set ownership ==="
+echo "chown -R www-data:www-data /var/www/moodle
+chown -R www-data:www-data /var/www/moodledata"
+
 chown -R www-data:www-data /var/www/moodle
 chown -R www-data:www-data /var/www/moodledata
 
-echo "=== Set permission ==="
+echo "chmod -R 0755 /var/www/moodle
+chmod -R 0777 /var/www/moodledata"
+
 chmod -R 0755 /var/www/moodle
 chmod -R 0777 /var/www/moodledata
 
@@ -121,7 +124,7 @@ server {
 }
 EOF
 
-echo "=== Reload nginx ==="
+echo "systemctl reload nginx"
 systemctl reload nginx
 
 CONFIG="/var/www/moodle/config.php"
