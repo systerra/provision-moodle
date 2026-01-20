@@ -22,34 +22,38 @@ if [ ! -f "$FLAG" ]; then
     fi
 }
 
-echo "=== TAHAP 1: Konfigurasi awal sistem ==="
 
-echo "=== Update /etc/hosts ==="
 sed -i '2c\192.168.20.3        db-20' /etc/hosts
 edit_file /etc/hosts
 
-echo "=== Update hostname ==="
 echo "db-20" > /etc/hostname
 hostnamectl set-hostname db-20
 edit_file /etc/hostname
 
-echo "=== Update IP address ==="
 sed -i 's/address[[:space:]]\+192\.168\.20\.2\/29/address 192.168.20.3\/29/' /etc/network/interfaces
 edit_file /etc/network/interfaces
 
-    echo "=== Tandai bahwa reboot akan dilakukan ==="
     touch "$FLAG"
 
-    echo "=== Reboot sistem ==="
     systemctl reboot
 
     exit 0
 fi
 
-echo "apt install mariadb-server mariadb-client"
+echo "root@db-20:/home/noval# nano /etc/hosts"
+echo "root@db-20:/home/noval# nano /etc/hostname"
+echo "root@db-20:/home/noval# nano /etc/network/interfaces"
+echo "              "
+echo "root@db-20:/home/noval# apt install mariadb-server mariadb-client"
 apt install mariadb-server mariadb-client -y
 
-echo "=== Create database Moodle ==="
+echo "              "
+echo "root@db-20:/home/noval# mysql -u root"
+echo "              "
+echo "MariaDB [(none)]> create database moodle;"
+echo "MariaDB [(none)]> create user 'noval'@'192.168.20.2' identified by '12345';"
+echo "MariaDB [(none)]> grant all on moodle.* to 'noval'@'192.168.20.2';"
+echo "MariaDB [(none)]> flush privileges;"
 export MYSQL_PWD="admin"
 
 mysql -u root <<EOF
@@ -72,13 +76,17 @@ mysql -u root -e "SHOW DATABASES LIKE 'moodle';"
 mysql -u root -e "SELECT Host, User FROM mysql.user WHERE User='noval';"
 unset MYSQL_PWD
 
+
 MYSQL_CNF="/etc/mysql/mariadb.conf.d/50-server.cnf"
 
+echo "              "
+echo "root@db-20:/home/noval# nano /etc/mysql/mariadb.conf.d/50-server.cnf"
+echo "              "
 echo "bind-address = 0.0.0.0"
 sed -i 's/^\s*bind-address\s*=.*/bind-address = 0.0.0.0/' "$MYSQL_CNF"
 
-echo "=== Restart MariaDB ==="
-systemctl restart mariadb
+echo "              "
+echo "root@db-20:/home/noval# systemctl restart mysqld"
 systemctl restart mysqld
 
 rm -f "$FLAG"
