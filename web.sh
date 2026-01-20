@@ -2,55 +2,64 @@
 
 set -e
 
-echo "apt install nginx"
-apt install nginx -y
+echo "root@web-20:/home/noval# apt install nginx -y"
+apt-get install -y nginx 2>&1 | sed '/The following additional packages will be installed:/q'
 
-echo "=== Install PHP 8.2 dan ekstensi ==="
+echo "              "
+echo "root@web-20:/home/noval# apt-get install -y php8.2-{fpm,cli,curl,zip,gd,xml,intl,mbstring,xmlrpc,soap,bcmath,exif,ldap,mysql} unzip"
 apt-get install -y \
 php8.2-fpm php8.2-cli php8.2-curl php8.2-zip php8.2-gd \
 php8.2-xml php8.2-intl php8.2-mbstring php8.2-xmlrpc php8.2-soap \
-php8.2-bcmath php8.2-exif php8.2-ldap php8.2-mysql unzip
+php8.2-bcmath php8.2-exif php8.2-ldap php8.2-mysql unzip \
+2>&1 | sed '/The following additional packages will be installed:/q'
+
 
 PHP_INI="/etc/php/8.2/fpm/php.ini"
 
+echo "              "
+echo "root@web-20:/home/noval# nano /etc/php/8.2/fpm/php.ini"
 sed -i 's/^;\s*max_input_vars\s*=.*/max_input_vars = 6000/' /etc/php/8.2/fpm/php.ini
-
-echo "===================================="
-echo "systemctl restart php8.2-fpm"
-systemctl restart php8.2-fpm
-
-echo "===================================="
+echo "              "
 grep "^max_input_vars" /etc/php/8.2/fpm/php.ini
 
-echo "===================================="
-echo "wget https://packaging.moodle.org/stable500/moodle-latest-500.zip"
+echo "              "
+echo "root@web-20:/home/noval# systemctl restart php8.2-fpm"
+systemctl restart php8.2-fpm
+
+echo "              "
+read -p "ENTER untuk lanjut..." _
+echo "              "
+echo "root@web-20:/home/noval# wget https://packaging.moodle.org/stable500/moodle-latest-500.zip"
 wget https://packaging.moodle.org/stable500/moodle-latest-500.zip
 
-echo "unzip moodle-latest-500.zip -d /var/www/"
-unzip moodle-latest-500.zip -d /var/www/
+read -p "ENTER untuk lanjut..." _
+echo "              "
+echo "root@web-20:/home/noval# unzip -q moodle-latest-500.zip -d /var/www/"
+echo "              "
+unzip -q moodle-latest-500.zip -d /var/www/
 
-echo "mkdir -p /var/www/moodledata"
+echo "root@web-20:/home/noval# mkdir -p /var/www/moodledata"
 
 mkdir -p /var/www/moodledata
 
-echo "chown -R www-data:www-data /var/www/moodle
-chown -R www-data:www-data /var/www/moodledata"
+echo "root@web-20:/home/noval# chown -R www-data:www-data /var/www/moodle"
+echo "root@web-20:/home/noval# chown -R www-data:www-data /var/www/moodledata"
 
 chown -R www-data:www-data /var/www/moodle
 chown -R www-data:www-data /var/www/moodledata
 
-echo "chmod -R 0755 /var/www/moodle
-chmod -R 0777 /var/www/moodledata"
+echo "root@web-20:/home/noval# chmod -R 0755 /var/www/moodle"
+echo "root@web-20:/home/noval# chmod -R 0777 /var/www/moodledata"
 
 chmod -R 0755 /var/www/moodle
 chmod -R 0777 /var/www/moodledata
 
 NGINX_DEFAULT="/etc/nginx/sites-available/default"
 
-echo "=== Hapus /etc/nginx/sites-available/default"
 rm -f "$NGINX_DEFAULT"
 
-echo "=== Buat /etc/nginx/sites-available/default"
+echo "              "
+echo "root@web-20:/home/noval# nano /etc/nginx/sites-available/default"
 cat << 'EOF' > "$NGINX_DEFAULT"
 ##
 # You should look at the following URL's in order to grasp a solid understanding
@@ -126,12 +135,7 @@ server {
 }
 EOF
 
-echo "===================================="
-echo "systemctl reload nginx"
-systemctl reload nginx
-
-echo "===================================="
-echo -e "\n=== KONFIGURASI NGINX SAAT INI: ==="
+echo "              "
 cat << 'EOF'
 root /var/www/moodle;
 index index.php index.htm index.html;
@@ -152,7 +156,13 @@ location ~ \.(php|phar)(/.*)?$ {
     fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;
 }
 EOF
-echo -e "====================================\n"
+
+echo "              "
+echo "root@web-20:/home/noval# systemctl reload nginx"
+systemctl reload nginx
+
+echo "              "
+
 
 CONFIG="/var/www/moodle/config.php"
 MOODLE_CLI="/var/www/moodle/admin/cli/purge_caches.php"
@@ -163,7 +173,9 @@ while [ ! -f "$CONFIG" ]; do
     sleep 2
 done
 
-echo "config.php ditemukan."
+echo "              "
+echo "root@web-20:/home/noval# nano /var/www/moodle/config.php"
+echo "              "
 
 if grep -q "alamat_akses" "$CONFIG"; then
     echo "config.php sudah dimodifikasi. Skip update."
@@ -182,7 +194,6 @@ else
     { print }
     ' "$CONFIG" > "${CONFIG}.tmp" && mv "${CONFIG}.tmp" "$CONFIG"
 
-    echo -e "\n=== KONFIGURASI BARU DI CONFIG.PHP: ==="
     cat << 'EOF'
 $alamat_akses = $_SERVER["HTTP_HOST"] ?? "";
 if (strpos($alamat_akses, "172.16.100.20") !== false) {
@@ -192,14 +203,16 @@ if (strpos($alamat_akses, "172.16.100.20") !== false) {
     $CFG->wwwroot = "http://192.168.20.2";
 }
 EOF
-    echo -e "========================================\n"
+
+echo "              "
 fi
 
 
 if [ -f "$MOODLE_CLI" ]; then
     echo "Menjalankan purge cache Moodle..."
     php "$MOODLE_CLI"
-    echo "Purge cache selesai."
+    echo "              "
+    echo "root@web-20:/home/noval# php /var/www/moodle/admin/cli/purge_caches.php"
 else
     echo "WARNING: $MOODLE_CLI tidak ditemukan."
 fi
