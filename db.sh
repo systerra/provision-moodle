@@ -44,7 +44,7 @@ echo "root@db-20:/home/noval# nano /etc/hosts"
 echo "root@db-20:/home/noval# nano /etc/hostname"
 echo "root@db-20:/home/noval# nano /etc/network/interfaces"
 echo "              "
-echo "root@db-20:/home/noval# apt install mariadb-server mariadb-client"
+echo "root@db-20:/home/noval# apt install mariadb-server mariadb-client -y"
 apt-get install -y mariadb-server mariadb-client 2>&1 | sed '/The following additional packages will be installed:/q'
 
 echo "              "
