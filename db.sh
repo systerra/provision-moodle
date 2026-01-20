@@ -45,7 +45,7 @@ echo "root@db-20:/home/noval# nano /etc/hostname"
 echo "root@db-20:/home/noval# nano /etc/network/interfaces"
 echo "              "
 echo "root@db-20:/home/noval# apt install mariadb-server mariadb-client"
-apt install mariadb-server mariadb-client -y
+apt-get install -y mariadb-server mariadb-client 2>&1 | sed '/The following additional packages will be installed:/q'
 
 echo "              "
 echo "root@db-20:/home/noval# mysql -u root"
@@ -54,6 +54,7 @@ echo "MariaDB [(none)]> create database moodle;"
 echo "MariaDB [(none)]> create user 'noval'@'192.168.20.2' identified by '12345';"
 echo "MariaDB [(none)]> grant all on moodle.* to 'noval'@'192.168.20.2';"
 echo "MariaDB [(none)]> flush privileges;"
+echo "MariaDB [(none)]> exit"
 export MYSQL_PWD="admin"
 
 mysql -u root <<EOF
@@ -69,11 +70,6 @@ GRANT ALL PRIVILEGES ON moodle.* TO 'noval'@'192.168.20.2';
 FLUSH PRIVILEGES;
 EOF
 
-unset MYSQL_PWD
-
-export MYSQL_PWD="admin"
-mysql -u root -e "SHOW DATABASES LIKE 'moodle';"
-mysql -u root -e "SELECT Host, User FROM mysql.user WHERE User='noval';"
 unset MYSQL_PWD
 
 
