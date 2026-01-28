@@ -18,7 +18,6 @@ if [ ! -f "$FLAG" ]; then
         pico "$FILE"
     else
         echo "Editor nano/pico tidak ditemukan, dilewati."
-        read -p "Tekan ENTER untuk melanjutkan..."
     fi
 }
 
@@ -43,13 +42,13 @@ fi
 echo "root@db-20:/home/noval# nano /etc/hosts"
 echo "root@db-20:/home/noval# nano /etc/hostname"
 echo "root@db-20:/home/noval# nano /etc/network/interfaces"
-echo "              "
+echo ""
 echo "root@db-20:/home/noval# apt install mariadb-server mariadb-client -y"
 apt-get install -y mariadb-server mariadb-client 2>&1 | sed '/The following additional packages will be installed:/q'
 
-echo "              "
+echo ""
 echo "root@db-20:/home/noval# mysql -u root"
-echo "              "
+echo ""
 echo "MariaDB [(none)]> create database moodle;"
 echo "MariaDB [(none)]> create user 'noval'@'192.168.20.2' identified by '12345';"
 echo "MariaDB [(none)]> grant all on moodle.* to 'noval'@'192.168.20.2';"
@@ -75,13 +74,13 @@ unset MYSQL_PWD
 
 MYSQL_CNF="/etc/mysql/mariadb.conf.d/50-server.cnf"
 
-echo "              "
+echo ""
 echo "root@db-20:/home/noval# nano /etc/mysql/mariadb.conf.d/50-server.cnf"
-echo "              "
+echo ""
 echo "bind-address = 0.0.0.0"
 sed -i 's/^\s*bind-address\s*=.*/bind-address = 0.0.0.0/' "$MYSQL_CNF"
 
-echo "              "
+echo ""
 echo "root@db-20:/home/noval# systemctl restart mysqld"
 systemctl restart mysqld
 
