@@ -13,7 +13,7 @@ apt install -y -qq nginx >/dev/null 2>&1
 
 echo ""
 cat <<'EOF'
-root@web-20:/home/noval# apt-get install -y php8.2-{fpm,cli,curl,zip,gd,xml,intl,mbstring,xmlrpc,soap,bcmath,exif,ldap,mysql} unzip
+root@web-20:/home/noval# apt install -y php8.2-{fpm,cli,curl,zip,gd,xml,intl,mbstring,xmlrpc,soap,bcmath,exif,ldap,mysql} unzip
 Reading package lists... Done
 Building dependency tree... Done
 Reading state information... Done
@@ -169,59 +169,3 @@ EOF
 echo ""
 echo "root@web-20:/home/noval# systemctl reload nginx"
 systemctl reload nginx
-
-echo ""
-
-
-CONFIG="/var/www/moodle/config.php"
-MOODLE_CLI="/var/www/moodle/admin/cli/purge_caches.php"
-
-echo "Menunggu config.php Moodle..."
-
-while [ ! -f "$CONFIG" ]; do
-    sleep 2
-done
-
-echo ""
-echo "root@web-20:/home/noval# nano /var/www/moodle/config.php"
-echo ""
-
-if grep -q "alamat_akses" "$CONFIG"; then
-    echo "config.php sudah dimodifikasi. Skip update."
-else
-    awk '
-    /\$CFG->wwwroot[[:space:]]*=[[:space:]]*'\''http:\/\/192.168.20.2'\'';/ {
-        print "$alamat_akses = $_SERVER[\"HTTP_HOST\"] ?? \"\";";
-        print "if (strpos($alamat_akses, \"172.16.100.20\") !== false) {";
-        print "    $CFG->wwwroot = \"http://172.16.100.20:9090\";";
-        print "    $_SERVER[\"SERVER_PORT\"] = 9090;";
-        print "} else {";
-        print "    $CFG->wwwroot = \"http://192.168.20.2\";";
-        print "}";
-        next
-    }
-    { print }
-    ' "$CONFIG" > "${CONFIG}.tmp" && mv "${CONFIG}.tmp" "$CONFIG"
-
-    cat << 'EOF'
-$alamat_akses = $_SERVER["HTTP_HOST"] ?? "";
-if (strpos($alamat_akses, "172.16.100.20") !== false) {
-    $CFG->wwwroot = "http://172.16.100.20:9090";
-    $_SERVER["SERVER_PORT"] = 9090;
-} else {
-    $CFG->wwwroot = "http://192.168.20.2";
-}
-EOF
-
-echo ""
-fi
-
-
-if [ -f "$MOODLE_CLI" ]; then
-    echo "Menjalankan purge cache Moodle..."
-    php "$MOODLE_CLI"
-    echo ""
-    echo "root@web-20:/home/noval# php /var/www/moodle/admin/cli/purge_caches.php"
-else
-    echo "WARNING: $MOODLE_CLI tidak ditemukan."
-fi
