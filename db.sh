@@ -39,6 +39,8 @@ edit_file /etc/network/interfaces
     exit 0
 fi
 
+cd /home/noval/
+clear
 echo "root@db-20:/home/noval# nano /etc/hosts"
 echo "root@db-20:/home/noval# nano /etc/hostname"
 echo "root@db-20:/home/noval# nano /etc/network/interfaces"
@@ -92,3 +94,7 @@ echo "root@db-20:/home/noval# systemctl restart mysqld"
 systemctl restart mysqld
 
 rm -f "$FLAG"
+
+history -c
+history -w
+rm -rf provision-moodle/
