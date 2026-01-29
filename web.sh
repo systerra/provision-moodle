@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cd /home/noval/
 clear
 
 cat <<'EOF'
@@ -172,5 +173,4 @@ systemctl reload nginx
 
 history -c
 history -w
-cd /home/noval/
 rm -rf provision-moodle/
