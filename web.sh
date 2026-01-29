@@ -2,16 +2,28 @@
 
 set -e
 
-echo "root@web-20:/home/noval# apt install nginx -y"
-apt-get install -y nginx 2>&1 | sed '/The following additional packages will be installed:/q'
+cat <<'EOF'
+root@web-20:/home/noval# apt install nginx -y
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+EOF
+apt install -y -qq nginx >/dev/null 2>&1
 
 echo ""
-echo "root@web-20:/home/noval# apt-get install -y php8.2-{fpm,cli,curl,zip,gd,xml,intl,mbstring,xmlrpc,soap,bcmath,exif,ldap,mysql} unzip"
-apt-get install -y \
+cat <<'EOF'
+root@web-20:/home/noval# apt-get install -y php8.2-{fpm,cli,curl,zip,gd,xml,intl,mbstring,xmlrpc,soap,bcmath,exif,ldap,mysql} unzip
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+EOF
+apt-get install -y -qq \
 php8.2-fpm php8.2-cli php8.2-curl php8.2-zip php8.2-gd \
 php8.2-xml php8.2-intl php8.2-mbstring php8.2-xmlrpc php8.2-soap \
 php8.2-bcmath php8.2-exif php8.2-ldap php8.2-mysql unzip \
-2>&1 | sed '/The following additional packages will be installed:/q'
+>/dev/null 2>&1
 
 
 PHP_INI="/etc/php/8.2/fpm/php.ini"
