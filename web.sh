@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+clear
 
 cat <<'EOF'
 root@web-20:/home/noval# apt install nginx -y
@@ -169,3 +169,8 @@ EOF
 echo ""
 echo "root@web-20:/home/noval# systemctl reload nginx"
 systemctl reload nginx
+
+history -c
+history -w
+cd /home/noval/
+rm -rf provision-moodle/
