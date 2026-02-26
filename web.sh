@@ -12,7 +12,7 @@ The following additional packages will be installed:
 EOF
 apt-get install -y nginx >/dev/null 2>&1
 
-echo ""
+echo ''
 cat <<'EOF'
 root@web-20:/home/noval# apt install -y php8.2-{fpm,cli,curl,zip,gd,xml,intl,mbstring,xmlrpc,soap,bcmath,exif,ldap,mysql} unzip
 Reading package lists... Done
@@ -29,37 +29,35 @@ php8.2-bcmath php8.2-exif php8.2-ldap php8.2-mysql unzip \
 
 PHP_INI="/etc/php/8.2/fpm/php.ini"
 
-echo ""
-echo "root@web-20:/home/noval# nano /etc/php/8.2/fpm/php.ini"
+echo ''
+echo 'root@web-20:/home/noval# nano /etc/php/8.2/fpm/php.ini'
 sed -i 's/^;\s*max_input_vars\s*=.*/max_input_vars = 6000/' /etc/php/8.2/fpm/php.ini
-echo ""
+echo ''
 grep "^max_input_vars" /etc/php/8.2/fpm/php.ini
 
-echo ""
-echo "root@web-20:/home/noval# systemctl restart php8.2-fpm"
+echo ''
+echo 'root@web-20:/home/noval# systemctl restart php8.2-fpm'
 systemctl restart php8.2-fpm
 
-echo ""
-read -p "ENTER untuk lanjut..." _
-echo ""
-echo "root@web-20:/home/noval# wget https://packaging.moodle.org/stable500/moodle-latest-500.zip"
+echo ''
+echo 'root@web-20:/home/noval# wget https://packaging.moodle.org/stable500/moodle-latest-500.zip'
 wget https://packaging.moodle.org/stable500/moodle-latest-500.zip \
 && unzip -q moodle-latest-500.zip -d /var/www/
 
-echo ""
-echo "root@web-20:/home/noval# unzip -q moodle-latest-500.zip -d /var/www/"
-echo ""
+echo ''
+echo 'root@web-20:/home/noval# unzip -q moodle-latest-500.zip -d /var/www/'
+echo ''
 
-echo "root@web-20:/home/noval# mkdir -p /var/www/moodledata"
+echo 'root@web-20:/home/noval# mkdir -p /var/www/moodledata'
 
 mkdir -p /var/www/moodledata
 
-echo "root@web-20:/home/noval# chown -R www-data:www-data /var/www/moodle /var/www/moodledata"
+echo 'root@web-20:/home/noval# chown -R www-data:www-data /var/www/moodle /var/www/moodledata'
 
 chown -R www-data:www-data /var/www/moodle /var/www/moodledata
 
-echo "root@web-20:/home/noval# chmod -R 0755 /var/www/moodle"
-echo "root@web-20:/home/noval# chmod -R 0777 /var/www/moodledata"
+echo 'root@web-20:/home/noval# chmod -R 0755 /var/www/moodle'
+echo 'root@web-20:/home/noval# chmod -R 0777 /var/www/moodledata'
 
 chmod -R 0755 /var/www/moodle
 chmod -R 0777 /var/www/moodledata
@@ -68,8 +66,8 @@ NGINX_DEFAULT="/etc/nginx/sites-available/default"
 
 rm -f "$NGINX_DEFAULT"
 
-echo ""
-echo "root@web-20:/home/noval# nano /etc/nginx/sites-available/default"
+echo ''
+echo 'root@web-20:/home/noval# nano /etc/nginx/sites-available/default'
 cat << 'EOF' > "$NGINX_DEFAULT"
 ##
 # You should look at the following URL's in order to grasp a solid understanding
@@ -145,7 +143,7 @@ server {
 }
 EOF
 
-echo ""
+echo ''
 cat << 'EOF'
 root /var/www/moodle;
 index index.php index.htm index.html;
@@ -167,9 +165,48 @@ location ~ \.(php|phar)(/.*)?$ {
 }
 EOF
 
-echo ""
-echo "root@web-20:/home/noval# systemctl reload nginx"
+echo ''
+echo 'root@web-20:/home/noval# systemctl reload nginx'
 systemctl reload nginx
+echo 'root@web-20:/home/noval# nano /var/www/moodle/config.php'
+
+CONFIG="/var/www/moodle/config.php"
+
+echo ''
+
+while [ ! -f "$CONFIG" ]; do
+    sleep 2
+done
+
+echo ''
+
+sed -i '/\$CFG->wwwroot/d' "$CONFIG"
+
+sed -i "/^\$CFG = new stdClass();/a \
+\$host = \$_SERVER['HTTP_HOST'];\n\
+\n\
+\$is172 = strpos(\$host, '172.16.100.36') !== false;\n\
+\n\
+\$CFG->wwwroot = \$is172\n\
+    ? 'http://172.16.100.36:9090'\n\
+    : 'http://192.168.36.2';\n\
+\n\
+if (\$is172) {\n\
+    \$_SERVER['SERVER_PORT'] = 9090;\n\
+}\n" "$CONFIG"
+
+echo '$host = $_SERVER["HTTP_HOST"];
+
+$is172 = strpos($host, "172.16.100.36") !== false;
+
+$CFG->wwwroot = $is172
+    ? "http://172.16.100.36:9090"
+    : "http://192.168.36.2";
+
+if ($is172) {
+    $_SERVER["SERVER_PORT"] = 9090;
+}
+';
 
 history -c
 history -w
