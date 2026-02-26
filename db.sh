@@ -95,6 +95,35 @@ echo ""
 echo "root@db-20:/home/noval# systemctl restart mysqld"
 systemctl restart mysqld
 
+read -p "root@db-20:/home/noval# peeeeeee" _
+echo "root@db-20:/home/noval# nano backup_db.sh"
+
+cat << 'EOF' > /home/noval/backup_db.sh
+#!/bin/bash
+# Variable
+DATE=$(date +%Y-%m-%d)
+BACKUP_DIR="/backup"
+DB_USER="noval"
+DB_PASS="12345"
+FILENAME="backup_$DATE.tar.gz"
+
+TMP_DIR="/tmp/backup_proses"
+mkdir -p $TMP_DIR
+
+mysqldump -u $DB_USER -p$DB_PASS --databases moodle > $TMP_DIR/moodle.sql
+
+tar -czf $BACKUP_DIR/$FILENAME -C $TMP_DIR .
+
+rm -rf $TMP_DIR
+find $BACKUP_DIR -type f -name "*.tar.gz" -mtime +7 -exec rm {} \;
+
+echo "Backup berhasil disimpan di $BACKUP_DIR/$FILENAME"
+EOF
+
+nano backup_db.sh
+echo "root@db-20:/home/noval# chmod +x backup_db.sh"
+chmod +x backup_db.sh
+
 rm -f "$FLAG"
 
 history -c
