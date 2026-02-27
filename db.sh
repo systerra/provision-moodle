@@ -62,7 +62,7 @@ echo "root@db-20:/home/noval# mysql -u root"
 echo ""
 echo "MariaDB [(none)]> create database moodle;"
 echo "MariaDB [(none)]> create user 'noval'@'192.168.20.2' identified by '12345';"
-echo "MariaDB [(none)]> grant all on moodle.* to 'noval'@'192.168.20.2';"
+echo "MariaDB [(none)]> grant all on moodle.* to 'noval'@'%';"
 echo "MariaDB [(none)]> flush privileges;"
 echo "MariaDB [(none)]> exit"
 export MYSQL_PWD="admin"
@@ -75,7 +75,7 @@ COLLATE utf8mb4_unicode_ci;
 CREATE USER IF NOT EXISTS 'noval'@'192.168.20.2'
 IDENTIFIED BY '12345';
 
-GRANT ALL PRIVILEGES ON moodle.* TO 'noval'@'192.168.20.2';
+GRANT ALL PRIVILEGES ON moodle.* TO 'noval'@'%';
 
 FLUSH PRIVILEGES;
 EOF
@@ -108,6 +108,7 @@ DB_PASS="12345"
 FILENAME="backup_$DATE.tar.gz"
 
 TMP_DIR="/tmp/backup_proses"
+mkdir $BACKUP_DIR
 mkdir -p $TMP_DIR
 
 mysqldump -u $DB_USER -p$DB_PASS --databases moodle > $TMP_DIR/moodle.sql
@@ -123,6 +124,8 @@ EOF
 nano backup_db.sh
 echo "root@db-20:/home/noval# chmod +x backup_db.sh"
 chmod +x backup_db.sh
+echo "root@db-20:/home/noval# ./backup_db.sh"
+/home/noval/backup_db.sh
 
 rm -f "$FLAG"
 
