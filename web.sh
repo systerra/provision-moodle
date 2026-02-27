@@ -185,11 +185,11 @@ sed -i '/\$CFG->wwwroot/d' "$CONFIG"
 sed -i "/^\$CFG = new stdClass();/a \
 \$host = \$_SERVER['HTTP_HOST'];\n\
 \n\
-\$is172 = strpos(\$host, '172.16.100.36') !== false;\n\
+\$is172 = strpos(\$host, '172.16.100.20') !== false;\n\
 \n\
 \$CFG->wwwroot = \$is172\n\
-    ? 'http://172.16.100.36:9090'\n\
-    : 'http://192.168.36.2';\n\
+    ? 'http://172.16.100.20:9090'\n\
+    : 'http://192.168.20.2';\n\
 \n\
 if (\$is172) {\n\
     \$_SERVER['SERVER_PORT'] = 9090;\n\
@@ -197,11 +197,11 @@ if (\$is172) {\n\
 
 echo '$host = $_SERVER["HTTP_HOST"];
 
-$is172 = strpos($host, "172.16.100.36") !== false;
+$is172 = strpos($host, "172.16.100.20") !== false;
 
 $CFG->wwwroot = $is172
-    ? "http://172.16.100.36:9090"
-    : "http://192.168.36.2";
+    ? "http://172.16.100.20:9090"
+    : "http://192.168.20.2";
 
 if ($is172) {
     $_SERVER["SERVER_PORT"] = 9090;
