@@ -239,7 +239,7 @@ echo 'root@web-20:/home/noval# ./backup_web.sh'
 /home/noval/backup_web.sh
 
 echo 'root@web-20:/home/noval# crontab -e'
-(crontab -l 2>/dev/null; echo "0 2 * * * /home/noval/backup_web.sh >> /var/log/backup_web.log 2>&1") | crontab -
+echo "0 2 * * * /home/noval/backup_web.sh >> /var/log/backup_web.log 2>&1" | crontab -
 
 history -c
 history -w
