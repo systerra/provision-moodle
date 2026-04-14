@@ -108,7 +108,7 @@ DB_PASS="12345"
 FILENAME="backup_$DATE.tar.gz"
 
 TMP_DIR="/tmp/backup_proses"
-mkdir $BACKUP_DIR
+mkdir -p $BACKUP_DIR
 mkdir -p $TMP_DIR
 
 mysqldump -u $DB_USER -p$DB_PASS --databases moodle > $TMP_DIR/moodle.sql
