@@ -127,6 +127,9 @@ chmod +x backup_db.sh
 echo "root@db-20:/home/noval# ./backup_db.sh"
 /home/noval/backup_db.sh
 
+echo "root@db-20:/home/noval# crontab -e"
+(crontab -l 2>/dev/null; echo "0 2 * * * /home/noval/backup_db.sh >> /var/log/backup_server.log 2>&1") | crontab -
+
 rm -f "$FLAG"
 
 history -c
