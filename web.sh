@@ -219,7 +219,7 @@ BACKUP_DIR="/backup"
 FILENAME="backup_$DATE.tar.gz"
 
 TMP_DIR="/tmp/backup_proses"
-mkdir $BACKUP_DIR
+mkdir -p $BACKUP_DIR
 mkdir -p $TMP_DIR
 
 cp -r /etc/nginx $TMP_DIR/nginx
