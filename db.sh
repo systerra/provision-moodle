@@ -127,9 +127,8 @@ echo "root@db-20:/home/noval# ./backup_db.sh"
 /home/noval/backup_db.sh
 
 echo ""
-(crontab -l 2>/dev/null | grep -v "backup_db.sh"; echo "0 2 * * * /home/noval/backup_db.sh >> /home/noval/backup.log 2>&1") | crontab -
 echo "root@db-20:/home/noval# crontab -e"
-(crontab -l 2>/dev/null | grep -v "backup_db.sh"; echo "0 2 * * * /home/noval/backup_db.sh >> /home/noval/backup.log 2>&1") | crontab -
+echo "0 2 * * * /home/noval/backup_db.sh >> /var/log/backup_web.log 2>&1" | crontab -
 
 rm -f "$FLAG"
 
