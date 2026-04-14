@@ -230,10 +230,10 @@ find $BACKUP_DIR -type f -name "*.tar.gz" -mtime +7 -exec rm {} \;
 echo "Backup berhasil disimpan di $BACKUP_DIR/$FILENAME"
 EOF
 
-nano backup_web.sh
+nano /home/noval/backup_web.sh
 
 echo 'root@web-20:/home/noval# chmod +x backup_web.sh'
-chmod +x backup_web.sh
+chmod +x /home/noval/backup_web.sh
 
 echo 'root@web-20:/home/noval# ./backup_web.sh'
 /home/noval/backup_web.sh
@@ -243,4 +243,4 @@ echo 'root@web-20:/home/noval# crontab -e'
 
 history -c
 history -w
-rm -rf provision-moodle/
+rm -rf /home/noval/provision-moodle/
