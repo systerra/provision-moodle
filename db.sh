@@ -98,9 +98,8 @@ systemctl restart mysqld
 read -p "root@db-20:/home/noval# peeeeeee" _
 echo "root@db-20:/home/noval# nano backup_db.sh"
 
-cat << 'EOF' > /home/noval/backup_db.sh
+tee /home/noval/backup_db.sh > /dev/null << 'EOF'
 #!/bin/bash
-# Variable
 DATE=$(date +%Y-%m-%d)
 BACKUP_DIR="/backup"
 DB_USER="noval"
@@ -111,7 +110,7 @@ TMP_DIR="/tmp/backup_proses"
 mkdir -p $BACKUP_DIR
 mkdir -p $TMP_DIR
 
-mysqldump -u $DB_USER -p$DB_PASS --databases moodle > $TMP_DIR/moodle.sql
+mysqldump -u $DB_USER -p$DB_PASS moodle > $TMP_DIR/moodle.sql
 
 tar -czf $BACKUP_DIR/$FILENAME -C $TMP_DIR .
 
