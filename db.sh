@@ -134,5 +134,4 @@ rm -f "$FLAG"
 
 history -c
 history -w
-cd /home/noval
 rm -rf /home/noval/provision-moodle/
