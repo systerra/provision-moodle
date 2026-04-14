@@ -98,7 +98,8 @@ systemctl restart mysqld
 read -p "root@db-20:/home/noval# peeeeeee" _
 echo "root@db-20:/home/noval# nano backup_db.sh"
 
-echo '#!/bin/bash
+cat <<'EOF' > /home/noval/backup_db.sh
+#!/bin/bash
 DATE=$(date +%Y-%m-%d)
 BACKUP_DIR="/backup"
 DB_USER="noval"
@@ -116,11 +117,11 @@ tar -czf $BACKUP_DIR/$FILENAME -C $TMP_DIR .
 rm -rf $TMP_DIR
 find $BACKUP_DIR -type f -name "*.tar.gz" -mtime +7 -exec rm {} \;
 
-echo "Backup berhasil disimpan di $BACKUP_DIR/$FILENAME"' > /home/noval/backup_db.sh
+echo "Backup berhasil disimpan di $BACKUP_DIR/$FILENAME"
+EOF
 
-nano backup_db.sh
 echo "root@db-20:/home/noval# chmod +x backup_db.sh"
-chmod +x backup_db.sh
+chmod +x /home/noval/backup_db.sh
 echo "root@db-20:/home/noval# ./backup_db.sh"
 /home/noval/backup_db.sh
 
