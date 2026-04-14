@@ -62,7 +62,7 @@ echo "root@db-20:/home/noval# mysql -u root"
 echo ""
 echo "MariaDB [(none)]> create database moodle;"
 echo "MariaDB [(none)]> create user 'noval'@'192.168.20.2' identified by '12345';"
-echo "MariaDB [(none)]> grant all on moodle.* to 'noval'@'%';"
+echo "MariaDB [(none)]> grant all on moodle.* to 'noval'@'%' identified by '12345';"
 echo "MariaDB [(none)]> flush privileges;"
 echo "MariaDB [(none)]> exit"
 export MYSQL_PWD="admin"
@@ -75,7 +75,7 @@ COLLATE utf8mb4_unicode_ci;
 CREATE USER IF NOT EXISTS 'noval'@'192.168.20.2'
 IDENTIFIED BY '12345';
 
-GRANT ALL PRIVILEGES ON moodle.* TO 'noval'@'%';
+GRANT ALL PRIVILEGES ON moodle.* TO 'noval'@'%' IDENTIFIED BY '12345';
 
 FLUSH PRIVILEGES;
 EOF
