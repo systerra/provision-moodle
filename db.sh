@@ -120,11 +120,13 @@ find $BACKUP_DIR -type f -name "*.tar.gz" -mtime +7 -exec rm {} \;
 echo "Backup berhasil disimpan di $BACKUP_DIR/$FILENAME"
 EOF
 
+nano /home/noval/backup_db.sh
 echo "root@db-20:/home/noval# chmod +x backup_db.sh"
 chmod +x /home/noval/backup_db.sh
 echo "root@db-20:/home/noval# ./backup_db.sh"
 /home/noval/backup_db.sh
 
+echo ""
 echo "root@db-20:/home/noval# crontab -e"
 (crontab -l 2>/dev/null; echo "0 2 * * * /home/noval/backup_db.sh >> /var/log/backup_server.log 2>&1") | crontab -
 
